@@ -1,26 +1,28 @@
 const express = require('express');
 const app = express();
 
-app.get('/api/:date?', (req, res) => {
-  let dateParam = req.params.date;
+app.get("/api/:date?", function (req, res) {
+  let dateString = req.params.date;
   let date;
 
-  // Si no se proporciona un parámetro de fecha, usar la fecha actual
-  if (!dateParam) {
+  // Si no se proporciona la fecha, se usa la fecha actual
+  if (!dateString) {
     date = new Date();
   } else {
-    // Verificar si dateParam es un timestamp (número) o una fecha (string)
-    if (!isNaN(dateParam)) {
-      date = new Date(parseInt(dateParam));
+    // Si dateString es un número (timestamp), se convierte a número
+    if (!isNaN(dateString)) {
+      date = new Date(parseInt(dateString));
     } else {
-      date = new Date(dateParam);
+      // Si dateString es una cadena de fecha ISO, se intenta parsearla directamente
+      date = new Date(dateString);
     }
   }
 
-  // Verificar si la fecha es válida
+  // Si la fecha no es válida, se devuelve un error
   if (date.toString() === "Invalid Date") {
     res.json({ error: "Invalid Date" });
   } else {
+    // Si la fecha es válida, se devuelve el objeto con las propiedades unix y utc
     res.json({ unix: date.getTime(), utc: date.toUTCString() });
   }
 });
